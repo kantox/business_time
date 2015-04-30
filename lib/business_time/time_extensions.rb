@@ -4,9 +4,9 @@ module BusinessTime
     # this time falls outside of normal business hours.
     def workday?(currency=nil)
       if currency
+       weekday? && !BusinessTime::Config.currency_holidays[currency].include?(to_date.strftime('%Y-%m-%d'))
+     else
         weekday? && !BusinessTime::Config.holidays.include?(to_date)
-      else
-        weekday? && !BusinessTime::Config.currency_holidays[currency].include?(to_date)
       end
     end
 
