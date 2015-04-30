@@ -4,8 +4,8 @@ module BusinessTime
   class BusinessDays
     include Comparable
     attr_reader :days, :currency
-    
-    def initialize(days,currency=nil)
+
+    def initialize(days, currency = nil)
       @days = days
       @currency = currency
     end
@@ -16,7 +16,7 @@ module BusinessTime
       end
       self.days <=> other.days
     end
-    
+
     def after(time = Time.current)
       days = @days
       while days > 0 || !time.workday?(@currency)
@@ -37,7 +37,7 @@ module BusinessTime
       end
       time
     end
-    
+
     alias_method :ago, :before
     alias_method :until, :before
   end
