@@ -127,28 +127,24 @@ You can get the first workday after a time or return itself if it is a workday
 One might specify the holidays depending on the currency. That approach
 likely fails on `EUR` but here we go:
 
-```ruby
-BusinessTime::Config.currency_holidays = {
-  'EUR' => [
-    '2015-01-01', '2015-01-06', '2015-04-03', '2015-04-06',
-    '2015-05-01', '2015-06-01', '2015-06-24', '2015-08-15',
-    '2015-09-11', '2015-09-24', '2015-10-12', '2015-12-06',
-    '2015-12-08', '2015-12-25', '2015-12-26'
-  ]
-}
-```
+    BusinessTime::Config.currency_holidays = {
+      'EUR' => [
+        '2015-01-01', '2015-01-06', '2015-04-03', '2015-04-06',
+        '2015-05-01', '2015-06-01', '2015-06-24', '2015-08-15',
+        '2015-09-11', '2015-09-24', '2015-10-12', '2015-12-06',
+        '2015-12-08', '2015-12-25', '2015-12-26'
+      ]
+    }
 
 All the methods, calculating working days between two dates, are now ready to
 receive an optional currency parameter, to match holidays:
 
-```ruby
-deadline = 1.business_day('EUR').after(Date.parse('2015-04-29'))
-#⇒ #<Date: 2015-04-30 ...>
-deadline = 1.business_day.after(Date.parse('2015-04-30'))
-#⇒ #<Date: 2015-05-01 ...>
-deadline = 1.business_day('EUR').after(Date.parse('2015-04-30'))
-#⇒ #<Date: 2015-05-04 ...>
-```
+    deadline = 1.business_day('EUR').after(Date.parse('2015-04-29'))
+    #⇒ #<Date: 2015-04-30 ...>
+    deadline = 1.business_day.after(Date.parse('2015-04-30'))
+    #⇒ #<Date: 2015-05-01 ...>
+    deadline = 1.business_day('EUR').after(Date.parse('2015-04-30'))
+    #⇒ #<Date: 2015-05-04 ...>
 
 The latter gives _May 4_ because there is a holiday for _May 1_, defined in
 `BusinessTime::Config.currency_holidays`.
