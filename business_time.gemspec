@@ -1,4 +1,7 @@
-$LOAD_PATH.push File.expand_path("../lib", __FILE__)
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
 require "business_time/version"
 
 Gem::Specification.new do |s|
@@ -7,17 +10,18 @@ Gem::Specification.new do |s|
   s.summary = %Q{Support for doing time math in business hours and days}
   s.description = %Q{Have you ever wanted to do things like "6.business_days.from_now" and have weekends and holidays taken into account?  Now you can.}
   s.homepage = "https://github.com/bokmann/business_time"
-  s.authors = ["bokmann"]
-  s.email = "dbock@codesherpas.com"
+  s.authors = ["bokmann", 'Kantox LTD']
+  s.email = ["dbock@codesherpas.com", 'aleksei.matiushkin@kantox.com']
   s.license = "MIT"
 
-  s.files = `git ls-files -- {lib,rails_generators,LICENSE,README.rdoc}`.split("\n")
+  s.files = `git ls-files -z`.split("\x0").reject { |f| f.match(/(test|spec|features)\//) }
+  s.require_paths = %w(lib)
 
-  s.add_dependency('activesupport','>= 3.1.0')
-  s.add_dependency("tzinfo")
+  s.add_dependency 'activesupport', '~> 3.1', '>= 3.1.0'
+  s.add_dependency "tzinfo", '~> 0'
 
-  s.add_development_dependency "rake"
-  s.add_development_dependency "rdoc"
-  s.add_development_dependency "minitest"
-  s.add_development_dependency "minitest-rg"
+  s.add_development_dependency "rake", '~> 0'
+  s.add_development_dependency "rdoc", '~> 0'
+  s.add_development_dependency "minitest", '~> 0'
+  s.add_development_dependency "minitest-rg", '~> 0'
 end
