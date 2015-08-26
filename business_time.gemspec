@@ -20,8 +20,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', '~> 3.1', '>= 3.1.0'
   s.add_dependency "tzinfo", '~> 0'
 
-  s.add_development_dependency "rake", '~> 0'
-  s.add_development_dependency "rdoc", '~> 0'
-  s.add_development_dependency "minitest", '~> 0'
-  s.add_development_dependency "minitest-rg", '~> 0'
+  s.add_development_dependency "rake", '~> 10'
+  s.add_development_dependency "rdoc", '~> 4'
+  s.add_development_dependency "minitest", '~> 5'
+  s.add_development_dependency "minitest-rg", '~> 5'
+  s.add_development_dependency "minitest-reporters", '~> 1'
 end

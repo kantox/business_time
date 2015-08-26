@@ -1,5 +1,6 @@
 require 'minitest/autorun'
 require 'minitest/rg'
+require "minitest/reporters"
 
 if ENV["COV"]
   require 'simplecov'
@@ -18,6 +19,8 @@ end
 
 $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require 'business_time'
+
+Minitest::Reporters.use! [Minitest::Reporters::SpecReporter.new, Minitest::Reporters::ProgressReporter.new]
 
 MiniTest::Spec.class_eval do
   after do
