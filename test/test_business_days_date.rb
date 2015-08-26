@@ -1,6 +1,13 @@
 require File.expand_path('../helper', __FILE__)
 
 describe "business days" do
+  
+  before do
+    BusinessTime::Config.currency_holidays = {
+      'USD' => ['2010-04-14']
+    }
+  end
+  
   describe "with a standard Date object" do
     it "move to tomorrow if we add a business day" do
       first = Date.parse("April 13th, 2010")
@@ -8,8 +15,15 @@ describe "business days" do
       expected = Date.parse("April 14th, 2010")
       assert_equal expected, later
     end
+    
+    it "move to day after tomorrow if we add a business day USD" do
+      first = Date.parse("April 13th, 2010")
+      later = 1.business_day('USD').after(first)
+      expected = Date.parse("April 15th, 2010")
+      assert_equal expected, later
+    end
 
-    it "move to yesterday is we subtract a business day" do
+    it "move to yesterday if we subtract a business day" do
       first = Date.parse("April 13th, 2010")
       before = 1.business_day.before(first)
       expected = Date.parse("April 12th, 2010")

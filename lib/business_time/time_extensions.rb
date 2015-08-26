@@ -2,13 +2,17 @@ module BusinessTime
   module TimeExtensions
     # True if this time is on a workday (between 00:00:00 and 23:59:59), even if
     # this time falls outside of normal business hours.
-    def workday?(currency = nil)
+    def workday?(*currency)
+      currency = currency.flatten
       return false unless weekday?
-
-      currency = nil if BusinessTime::Config.currency_holidays[currency].nil?
+      
+      currency = currency.select{|c| !BusinessTime::Config.currency_holidays[c].nil?}
+      currency = nil if currency.blank?
       holidays = (currency.nil? ?
                     BusinessTime::Config.holidays :
-                    BusinessTime::Config.currency_holidays[currency]).map do |hd|
+                    currency.map do |c|
+                      BusinessTime::Config.currency_holidays[c]
+                    end).flatten.map do |hd|
                      case hd
                      when Date then hd
                      when DateTime then hd.to_date
@@ -45,9 +49,9 @@ module BusinessTime
 
       # True if this time is on a workday (between 00:00:00 and 23:59:59), even if
       # this time falls outside of normal business hours.
-      def workday?(day, currency = nil)
+      def workday?(day, *currency)
         ActiveSupport::Deprecation.warn("`Time.workday?(time)` is deprecated. Please use `time.workday?`")
-        day.workday? currency
+        day.workday?(*currency.flatten)
       end
 
       # True if this time falls on a weekday.
@@ -66,9 +70,11 @@ module BusinessTime
 
       # Rolls forward to the next beginning_of_workday
       # when the time is outside of business hours
-      def roll_forward(time, currency = nil)
+      def roll_forward(time, *currency)
+        
+        currency = currency.flatten
 
-        if Time.before_business_hours?(time) || !time.workday?(currency)
+        if Time.before_business_hours?(time) || !time.workday?(*currency)
           next_business_time = Time.beginning_of_workday(time)
         elsif Time.after_business_hours?(time) || Time.end_of_workday(time) == time
           next_business_time = Time.beginning_of_workday(time + 1.day)
@@ -76,7 +82,7 @@ module BusinessTime
           next_business_time = time.clone
         end
 
-        while !next_business_time.workday?(currency)
+        while !next_business_time.workday?(*currency)
           next_business_time = Time.beginning_of_workday(next_business_time + 1.day)
         end
 
@@ -85,8 +91,8 @@ module BusinessTime
 
       # Returns the time parameter itself if it is a business day
       # or else returns the next business day
-      def first_business_day(time, currency = nil)
-        while !time.workday?(currency)
+      def first_business_day(time, *currency)
+        while !time.workday?(*currency.flatten)
           time = time + 1.day
         end
 
@@ -95,8 +101,9 @@ module BusinessTime
 
       # Rolls backwards to the previous end_of_workday when the time is outside
       # of business hours
-      def roll_backward(time, currency = nil)
-        prev_business_time = if (Time.before_business_hours?(time) || !time.workday?(currency))
+      def roll_backward(time, *currency)
+        currency = currency.flatten
+        prev_business_time = if (Time.before_business_hours?(time) || !time.workday?(*currency))
                                Time.end_of_workday(time - 1.day)
                              elsif Time.after_business_hours?(time)
                                Time.end_of_workday(time)
@@ -104,7 +111,7 @@ module BusinessTime
                                time.clone
                              end
 
-        while !prev_business_time.workday?(currency)
+        while !prev_business_time.workday?(*currency)
           prev_business_time = Time.end_of_workday(prev_business_time - 1.day)
         end
 
@@ -113,16 +120,16 @@ module BusinessTime
 
       # Returns the time parameter itself if it is a business day
       # or else returns the previous business day
-      def previous_business_day(time, currency = nil)
-        while !time.workday?(currency)
+      def previous_business_day(time, *currency)
+        while !time.workday?(*currency.flatten)
           time = time - 1.day
         end
 
         time
       end
 
-      def work_hours_total(day, currency = nil)
-        return 0 unless day.workday?(currency)
+      def work_hours_total(day, *currency)
+        return 0 unless day.workday?(*currency.flatten)
 
         day = day.strftime('%a').downcase.to_sym
 
@@ -153,7 +160,7 @@ module BusinessTime
       end
     end
 
-    def business_time_until(to_time, currency = nil)
+    def business_time_until(to_time, *currency)
       # Make sure that we will calculate time from A to B "clockwise"
       if self < to_time
         time_a = self
@@ -164,10 +171,10 @@ module BusinessTime
         time_b = self
         direction = -1
       end
-
+      currency = currency.flatten
       # Align both times to the closest business hours
-      time_a = Time::roll_forward(time_a, currency)
-      time_b = Time::roll_forward(time_b, currency)
+      time_a = Time::roll_forward(time_a, *currency)
+      time_b = Time::roll_forward(time_b, *currency)
 
       if time_a.to_date == time_b.to_date
         time_b - time_a
@@ -176,15 +183,15 @@ module BusinessTime
         end_of_workday += 1 if end_of_workday.to_s =~ /23:59:59/
 
         first_day       = end_of_workday - time_a
-        days_in_between = ((time_a.to_date + 1)..(time_b.to_date - 1)).sum{ |day| Time::work_hours_total(day, currency) }
+        days_in_between = ((time_a.to_date + 1)..(time_b.to_date - 1)).sum{ |day| Time::work_hours_total(day, *currency) }
         last_day        = time_b - Time.beginning_of_workday(time_b)
 
         first_day + days_in_between + last_day
       end * direction
     end
 
-    def during_business_hours?(currency = nil)
-      self.workday?(currency) && self.to_i.between?(Time.beginning_of_workday(self).to_i, Time.end_of_workday(self).to_i)
+    def during_business_hours?(*currency)
+      self.workday?(*currency.flatten) && self.to_i.between?(Time.beginning_of_workday(self).to_i, Time.end_of_workday(self).to_i)
     end
   end
 end

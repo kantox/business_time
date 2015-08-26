@@ -9,8 +9,12 @@ class Fixnum
   end
   alias_method :business_hour, :business_hours
 
-  def business_days currency = nil
-    BusinessTime::BusinessDays.new(self, currency)
+  def business_days *currency
+    if currency.length == 0
+      BusinessTime::BusinessDays.new(self)
+    else
+      BusinessTime::BusinessDays.new(self, *[currency])
+    end
   end
   alias_method :business_day, :business_days
 end
