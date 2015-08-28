@@ -27,7 +27,6 @@ describe "time extensions" do
     assert( Time.parse("April 12, 2010 10:45 am").workday?('USD'))
     assert(!Time.parse("April 10, 2010 10:45 am").workday?('GBPUSD'))
     assert(!Time.parse("April 11, 2010 10:45 am").workday?('USD', 'EUR'))
-    assert( Time.parse("April 12, 2010 10:45 am").workday?(nil))
   end
 
   it "know a weekend day is not a workday (with a configured work week)" do

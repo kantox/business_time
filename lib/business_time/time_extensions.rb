@@ -1,12 +1,11 @@
-require 'currency'
 
 module BusinessTime
   module TimeExtensions
-    include Currency
+    include BusinessTime::Currency
     # True if this time is on a workday (between 00:00:00 and 23:59:59), even if
     # this time falls outside of normal business hours.
     def workday?(*currency)
-      currency = args(currency)
+      currency = args(*currency)
       return false unless weekday?
       
       currency = currency.select{|c| !BusinessTime::Config.currency_holidays[c].nil?} rescue nil
@@ -55,7 +54,7 @@ module BusinessTime
       # this time falls outside of normal business hours.
       def workday?(day, *currency)
         ActiveSupport::Deprecation.warn("`Time.workday?(time)` is deprecated. Please use `time.workday?`")
-        day.workday?(args(currency))
+        day.workday?(args(*currency))
       end
 
       # True if this time falls on a weekday.
@@ -76,7 +75,7 @@ module BusinessTime
       # when the time is outside of business hours
       def roll_forward(time, *currency)
         
-        currency = args(currency)
+        currency = args(*currency)
 
         if Time.before_business_hours?(time) || !time.workday?(*currency)
           next_business_time = Time.beginning_of_workday(time)
@@ -96,7 +95,7 @@ module BusinessTime
       # Returns the time parameter itself if it is a business day
       # or else returns the next business day
       def first_business_day(time, *currency)
-        while !time.workday?(*args(currency))
+        while !time.workday?(*args(*currency))
           time = time + 1.day
         end
 
@@ -106,7 +105,7 @@ module BusinessTime
       # Rolls backwards to the previous end_of_workday when the time is outside
       # of business hours
       def roll_backward(time, *currency)
-        currency = args(currency)
+        currency = args(*currency)
         prev_business_time = if (Time.before_business_hours?(time) || !time.workday?(*currency))
                                Time.end_of_workday(time - 1.day)
                              elsif Time.after_business_hours?(time)
@@ -125,7 +124,7 @@ module BusinessTime
       # Returns the time parameter itself if it is a business day
       # or else returns the previous business day
       def previous_business_day(time, *currency)
-        while !time.workday?(*args(currency))
+        while !time.workday?(*args(*currency))
           time = time - 1.day
         end
 
@@ -133,7 +132,7 @@ module BusinessTime
       end
 
       def work_hours_total(day, *currency)
-        return 0 unless day.workday?(*args(currency))
+        return 0 unless day.workday?(*args(*currency))
 
         day = day.strftime('%a').downcase.to_sym
 
@@ -175,7 +174,7 @@ module BusinessTime
         time_b = self
         direction = -1
       end
-      currency = args(currency)
+      currency = args(*currency)
       # Align both times to the closest business hours
       time_a = Time::roll_forward(time_a, *currency) 
       time_b = Time::roll_forward(time_b, *currency)
@@ -195,7 +194,7 @@ module BusinessTime
     end
 
     def during_business_hours?(*currency)
-      self.workday?(*args(currency)) && self.to_i.between?(Time.beginning_of_workday(self).to_i, Time.end_of_workday(self).to_i)
+      self.workday?(*args(*currency)) && self.to_i.between?(Time.beginning_of_workday(self).to_i, Time.end_of_workday(self).to_i)
     end
   end
 end

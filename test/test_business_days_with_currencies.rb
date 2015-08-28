@@ -21,16 +21,14 @@ describe "business days with currencies" do
       first = Time.parse("April 30th, 2015, 11:00 am")
       later = [ 1.business_day('EURUSD').after(first),
                 1.business_day('USDEUR').after(first),
+                1.business_day('EUR|USD').after(first),
+                1.business_day('USD|EUR').after(first),
                 1.business_day('USD', 'EUR').after(first),
                 1.business_day('USD', 'EUR', 'USD').after(first),
                 1.business_day('EUR', 'USD').after(first),
                 1.business_day(*['EUR', 'USD']).after(first),
                 1.business_day('USD', 'EUR', 'PLN').after(first),
-                1.business_day('PLN', 'USD', 'EUR').after(first),
-                1.business_day('EUR', 'USD', nil).after(first),
-                1.business_day('EUR', nil, 'USD').after(first),
-                1.business_day(nil, 'EURUSD').after(first),
-                1.business_day('EURUSD', nil).after(first)
+                1.business_day('PLN', 'USD', 'EUR').after(first)
               ]
       expected = Time.parse("May 5th, 2015, 11:00 am")
       later.each do |l|
