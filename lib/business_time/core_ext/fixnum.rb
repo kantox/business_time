@@ -13,11 +13,7 @@ class Fixnum
 
   def business_days(*currency)
     currency = args(*currency)
-    if currency.blank?
-      BusinessTime::BusinessDays.new(self)
-    else
-      BusinessTime::BusinessDays.new(self, *currency)
-    end
+    BusinessTime::BusinessDays.new(self, *currency)
   end
   alias_method :business_day, :business_days
 end
