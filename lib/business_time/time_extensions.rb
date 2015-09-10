@@ -8,8 +8,8 @@ module BusinessTime
       currency = args(*currency)
       return false unless weekday?
 
-      currency = currency.select{|c| !BusinessTime::Config.currency_holidays[c].nil?} #rescue nil
-      currency = nil if currency.empty?
+      currency = currency.select{|c| !BusinessTime::Config.currency_holidays[c].nil?} rescue nil
+      currency = nil if currency.nil? || currency.empty?
       holidays = (currency.nil? ?
                     BusinessTime::Config.holidays :
                     currency.map do |c|
