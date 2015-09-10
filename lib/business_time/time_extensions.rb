@@ -8,13 +8,12 @@ module BusinessTime
       currency = args(*currency)
       return false unless weekday?
 
-      currency = currency.select{|c| !BusinessTime::Config.currency_holidays[c].nil?} rescue nil
-      currency = nil if currency.nil? || currency.empty?
-      holidays = (currency.nil? ?
-                    BusinessTime::Config.holidays :
-                    currency.map do |c|
-                      BusinessTime::Config.currency_holidays[c]
-                    end).flatten.map do |hd|
+      holidays =  if currency.empty?
+                    BusinessTime::Config.holidays
+                  else
+                    (currency + ["KX™", "LP™"]).map{|c| BusinessTime::Config.currency_holidays[c]}
+                  end              
+      holidays = holidays.flatten.map do |hd|
                      case hd
                      when Date then hd
                      when DateTime then hd.to_date
@@ -22,6 +21,7 @@ module BusinessTime
                      when ->(hd) { hd.respond_to? :to_date } then hd.to_date
                      end
                   end.compact
+                
       !holidays.include?(to_date)
     end
 

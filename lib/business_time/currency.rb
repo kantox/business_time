@@ -3,7 +3,7 @@ module BusinessTime
     # @return [Array] the list of currencies
     # @param [String+]
     def args(*currency)
-      return nil if currency.empty?
+      return [] if currency.empty?
 
       curr = if currency.length == 1 # string
                 if currency.first.length.remainder(3).zero? # 'EURUSD'

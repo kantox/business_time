@@ -38,7 +38,7 @@ describe "currency" do
       valid.each do |k,v|
         assert_equal args(*k).sort, v.sort
       end
-      assert_equal args(), nil
+      assert_equal args(), []
     end
     
     it "Raises argument error" do
