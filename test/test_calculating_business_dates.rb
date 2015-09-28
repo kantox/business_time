@@ -1,6 +1,7 @@
 require File.expand_path('../helper', __FILE__)
 
 describe "calculating business dates" do
+  
   it "properly calculate business dates over weekends" do
     friday = Date.parse("December 24, 2010")
     monday = Date.parse("December 27, 2010")

@@ -2,14 +2,15 @@ require 'active_support/time'
 
 module BusinessTime
   class BusinessDays
+    include BusinessTime::Currency
     include Comparable
     attr_reader :days, :currency
 
-    def initialize(days, currency = nil)
+    def initialize(days, *currency)
       @days = days
-      @currency = currency
+      @currency = args(*currency)
     end
-
+        
     def <=>(other)
       if other.class != self.class
         raise ArgumentError.new("#{self.class.to_s} can't be compared with #{other.class.to_s}")
@@ -19,8 +20,8 @@ module BusinessTime
 
     def after(time = Time.current)
       days = @days
-      while days > 0 || !time.workday?(@currency)
-        days -= 1 if time.workday?(@currency)
+      while days > 0 || !time.workday?(*@currency)
+        days -= 1 if time.workday?(*@currency)
         time = time + 1.day
       end
       time
@@ -31,8 +32,8 @@ module BusinessTime
 
     def before(time = Time.current)
       days = @days
-      while days > 0 || !time.workday?(@currency)
-        days -= 1 if time.workday?(@currency)
+      while days > 0 || !time.workday?(*@currency)
+        days -= 1 if time.workday?(*@currency)
         time = time - 1.day
       end
       time

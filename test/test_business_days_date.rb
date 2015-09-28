@@ -1,6 +1,7 @@
 require File.expand_path('../helper', __FILE__)
 
 describe "business days" do
+  
   describe "with a standard Date object" do
     it "move to tomorrow if we add a business day" do
       first = Date.parse("April 13th, 2010")
@@ -9,7 +10,7 @@ describe "business days" do
       assert_equal expected, later
     end
 
-    it "move to yesterday is we subtract a business day" do
+    it "move to yesterday if we subtract a business day" do
       first = Date.parse("April 13th, 2010")
       before = 1.business_day.before(first)
       expected = Date.parse("April 12th, 2010")

@@ -3,14 +3,17 @@
 #  7.business_days.ago
 #  3.business_days.after(some_date)
 #  4.business_hours.before(some_date_time)
+
 class Fixnum
+  include BusinessTime::Currency
   def business_hours
     BusinessTime::BusinessHours.new(self)
   end
   alias_method :business_hour, :business_hours
 
-  def business_days currency = nil
-    BusinessTime::BusinessDays.new(self, currency)
+  def business_days(*currency)
+    currency = args(*currency)
+    BusinessTime::BusinessDays.new(self, *currency)
   end
   alias_method :business_day, :business_days
 end

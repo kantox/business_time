@@ -1,11 +1,32 @@
 require File.expand_path('../helper', __FILE__)
 
 describe "time extensions" do
+  
+  before do
+    BusinessTime::Config.currency_holidays = {
+      'USD' => ['2010-04-9'],
+      'GBP' => ['2010-04-12']
+    }
+  end
+  
+  it "currency workday" do
+    assert( Time.parse("April 9, 2010 10:45 am").workday?('GBP'))
+    assert(!Time.parse("April 9, 2010 10:45 am").workday?('USD'))
+    assert(!Time.parse("April 9, 2010 10:45 am").workday?('USDGBP'))
+    assert(!Time.parse("April 9, 2010 10:45 am").workday?('USD', 'GBP'))
+    assert( Time.parse("April 12, 2010 10:45 am").workday?('USD'))
+    assert(!Time.parse("April 12, 2010 10:45 am").workday?('GBP'))
+  end
+  
   it "know a weekend day is not a workday" do
     assert( Time.parse("April 9, 2010 10:45 am").workday?)
     assert(!Time.parse("April 10, 2010 10:45 am").workday?)
     assert(!Time.parse("April 11, 2010 10:45 am").workday?)
     assert( Time.parse("April 12, 2010 10:45 am").workday?)
+    
+    assert( Time.parse("April 12, 2010 10:45 am").workday?('USD'))
+    assert(!Time.parse("April 10, 2010 10:45 am").workday?('GBPUSD'))
+    assert(!Time.parse("April 11, 2010 10:45 am").workday?('USD', 'EUR'))
   end
 
   it "know a weekend day is not a workday (with a configured work week)" do
