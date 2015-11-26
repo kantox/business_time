@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.require_paths = %w(lib)
 
   s.add_dependency 'activesupport', '~> 3.1', '>= 3.1.0'
-  s.add_dependency "tzinfo", '~> 1.2'
+  s.add_dependency 'tzinfo'
 
   s.add_development_dependency "rake", '~> 10'
   s.add_development_dependency "rdoc", '~> 4'
