@@ -7,14 +7,15 @@ module BusinessTime
   # manually, or with a yaml file and the load method.
   class Config
     DEFAULT_CONFIG = {
-      holidays:              [],
+      holidays:              Set.new,
       currency_holidays:     {},
       beginning_of_workday:  '9:00 am',
       end_of_workday:        '5:00 pm',
       work_week:             %w(mon tue wed thu fri),
       work_hours:            {},
       work_hours_total:      {},
-      _weekdays:             nil,
+      core_currencies:       Set.new,
+      _weekdays:             nil
     }
 
     class << self
@@ -42,13 +43,17 @@ module BusinessTime
         !local_config.nil?
       end
 
-      def threadsafe_cattr_accessor(name)
+      def threadsafe_cattr_accessor(name, writer: true)
         define_singleton_method name do
           config[name]
         end
         define_singleton_method "#{name}=" do |value|
           config[name] = value
-        end
+        end if writer
+      end
+
+      def threadsafe_cattr_reader(name)
+        threadsafe_cattr_accessor(name, writer: false)
       end
     end
 
@@ -74,14 +79,14 @@ module BusinessTime
     # by saying
     #   BusinessTime::Config.holidays << my_holiday_date_object
     # someplace in the initializers of your application.
-    threadsafe_cattr_accessor :holidays
+    threadsafe_cattr_reader :holidays
 
 
     # You can set this yourself, either by the load method below, or
     # by saying
     #   BusinessTime::Config.currency_holidays << my_holiday_date_object
     # someplace in the initializers of your application.
-    threadsafe_cattr_accessor :currency_holidays
+    threadsafe_cattr_reader :currency_holidays
 
     # working hours for each day - if not set using global variables :beginning_of_workday
     # and end_of_workday. Keys will be added ad weekdays.
@@ -93,6 +98,8 @@ module BusinessTime
     threadsafe_cattr_accessor :work_hours_total
 
     threadsafe_cattr_accessor :_weekdays # internal
+
+    threadsafe_cattr_accessor :core_currencies
 
     class << self
       def end_of_workday(day=nil)
@@ -127,6 +134,25 @@ module BusinessTime
         end
       end
 
+      def load_holidays(holidays, container: config[:holidays], append: false, accept_parsing: false)
+        container.replace(DEFAULT_CONFIG[:holidays]) unless append
+        holidays.each do |holiday|
+          container.add(if Date === holiday
+            holiday
+          else
+            Date.parse(holiday).tap do |parsed|
+              ActiveSupport::Deprecation.warn("Provide holidays as `Date` objects instead of `#{holiday.class}`. I parsed that thing as #{parsed}", caller) unless accept_parsing
+            end
+          end)
+        end
+      end
+
+      def load_currency_holidays(hash, append: false, accept_parsing: false)
+        hash.each do |currency, holidays|
+          load_holidays(holidays, container: config[:currency_holidays][currency] ||= Set.new, append: append, accept_parsing: true)
+        end
+      end
+
       # loads the config data from a yaml file written as:
       #
       #   business_time:
@@ -147,9 +173,7 @@ module BusinessTime
           send("#{var}=", config[var]) if config[var] && respond_to?("#{var}=")
         end
 
-        (config["holidays"] || []).each do |holiday|
-          holidays << Date.parse(holiday)
-        end
+        load_holidays(config["holidays"] ||= Set.new, append: true, accept_parsing: true)
       end
 
       def with(config)

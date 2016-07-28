@@ -2,27 +2,19 @@
 module BusinessTime
   module TimeExtensions
     include BusinessTime::Currency
+
     # True if this time is on a workday (between 00:00:00 and 23:59:59), even if
     # this time falls outside of normal business hours.
     def workday?(*currency)
-      currency = args(*currency)
+      # This may BREAK currencies where weekday are not standard (IE Arabic). In that
+      # case those currencies will have 3 non work days per week
       return false unless weekday?
 
-      holidays =  if currency.empty?
-                    BusinessTime::Config.holidays
-                  else
-                    (currency + ["KX™", "LP™"]).map{|c| BusinessTime::Config.currency_holidays[c]}
-                  end              
-      holidays = holidays.flatten.map do |hd|
-                     case hd
-                     when Date then hd
-                     when DateTime then hd.to_date
-                     when String then Date.parse(hd)
-                     when ->(hd) { hd.respond_to? :to_date } then hd.to_date
-                     end
-                  end.compact
-                
-      !holidays.include?(to_date)
+      currencies = args(*currency)
+      return workday_considering_holidays?(BusinessTime::Config.holidays) if currencies.empty?
+      currencies.all? do |ccy|
+        workday_considering_holidays?(BusinessTime::Config.currency_holidays.fetch(ccy, []))
+      end
     end
 
     # True if this time falls on a weekday.
@@ -191,6 +183,10 @@ module BusinessTime
 
     def during_business_hours?(*currency)
       self.workday?(*currency) && self.to_i.between?(Time.beginning_of_workday(self).to_i, Time.end_of_workday(self).to_i)
+    end
+
+    def workday_considering_holidays?(holidays)
+      !holidays.include?(to_date)
     end
   end
 end

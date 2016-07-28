@@ -1,14 +1,14 @@
 require File.expand_path('../helper', __FILE__)
 
 describe "time extensions" do
-  
+
   before do
-    BusinessTime::Config.currency_holidays = {
-      'USD' => ['2010-04-9'],
-      'GBP' => ['2010-04-12']
-    }
+    BusinessTime::Config.load_currency_holidays(
+      'USD' => [Date.civil(2010, 4, 9)],
+      'GBP' => [Date.civil(2010, 4, 12)]
+    )
   end
-  
+
   it "currency workday" do
     assert( Time.parse("April 9, 2010 10:45 am").workday?('GBP'))
     assert(!Time.parse("April 9, 2010 10:45 am").workday?('USD'))
@@ -17,13 +17,13 @@ describe "time extensions" do
     assert( Time.parse("April 12, 2010 10:45 am").workday?('USD'))
     assert(!Time.parse("April 12, 2010 10:45 am").workday?('GBP'))
   end
-  
+
   it "know a weekend day is not a workday" do
     assert( Time.parse("April 9, 2010 10:45 am").workday?)
     assert(!Time.parse("April 10, 2010 10:45 am").workday?)
     assert(!Time.parse("April 11, 2010 10:45 am").workday?)
     assert( Time.parse("April 12, 2010 10:45 am").workday?)
-    
+
     assert( Time.parse("April 12, 2010 10:45 am").workday?('USD'))
     assert(!Time.parse("April 10, 2010 10:45 am").workday?('GBPUSD'))
     assert(!Time.parse("April 11, 2010 10:45 am").workday?('USD', 'EUR'))
@@ -109,7 +109,7 @@ describe "time extensions" do
     ticket_resolved = Time.parse("February 4, 2012, 10:40 am") #will roll over to Monday morning, 9:00am
     assert_equal ticket_reported.business_time_until(ticket_resolved), 6.hours + 20.minutes
   end
-  
+
   it "knows if within business hours" do
     assert(Time.parse("2013-02-01 10:00").during_business_hours?)
     assert(!Time.parse("2013-02-01 5:00").during_business_hours?)
@@ -152,4 +152,6 @@ describe "time extensions" do
     }
     assert_equal wednesday, Time.roll_backward(saturday)
   end
+
+
 end

@@ -78,7 +78,7 @@ describe "calculating business duration" do
         mon: ["08:00", "20:00"],
         tue: ["08:00", "20:00"],
     }
-    BusinessTime::Config.holidays = []
+    BusinessTime::Config.load_holidays(Set.new)
 
     created_at = Time.local(2014, 05, 12, 20, 50) #yesterday night 20:50
     published_at = Time.local(2014, 05, 13, 8, 10) #today morning 08:10

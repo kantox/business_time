@@ -1,14 +1,14 @@
 require File.expand_path('../helper', __FILE__)
 
 describe "date extensions" do
-  
+
   before do
-    BusinessTime::Config.currency_holidays = {
-      'USD' => ['2010-04-14'],
-      'GBP' => ['2010-04-15']
-    }
+    BusinessTime::Config.load_currency_holidays(
+      'USD' => [Date.civil(2010, 04, 14)],
+      'GBP' => [Date.civil(2010, 04, 15)]
+    )
   end
-  
+
   it "know a weekend day is not a workday"  do
     assert(Date.parse("April 9, 2010").workday?)
     assert(!Date.parse("April 10, 2010").workday?)
@@ -37,17 +37,17 @@ describe "date extensions" do
     assert(!july_4.workday?)
     assert(!july_5.workday?)
   end
-  
+
   it "currency holidays" do
     july_5 = Date.parse("July 5, 2010")
 
     assert(july_5.workday?('USD'))
-    
-    BusinessTime::Config.currency_holidays = {'USD' => ['2010-07-05']}
+
+    BusinessTime::Config.load_currency_holidays('USD' => [Date.civil(2010, 07, 05)])
     assert(!july_5.workday?('USD'))
     assert(july_5.workday?('EUR'))
   end
-  
+
   it "currency workdays" do
     assert(Date.parse("April 9, 2010").workday?('USD'))
     assert(Date.parse("April 9, 2010").workday?('USDEUR'))
@@ -56,5 +56,5 @@ describe "date extensions" do
     assert(!Date.parse("April 14, 2010").workday?('USDEUR'))
     assert(!Date.parse("April 14, 2010").workday?('USD', 'EUR'))
   end
-  
+
 end

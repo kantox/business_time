@@ -5,10 +5,10 @@ describe "#business_time_until" do
     before do
       ENV['TZ'] = 'Pacific Time (US & Canada)'
       Time.zone = 'Eastern Time (US & Canada)'
-      BusinessTime::Config.currency_holidays = {
-        'USD' => ['2014-02-17'],
-        'GBP' => ['2010-04-15']
-      }
+      BusinessTime::Config.load_currency_holidays(
+        'USD' => [Date.civil(2014, 2, 17)],
+        'GBP' => [Date.civil(2010, 4, 15)]
+      )
     end
 
     it "should respect the time zone" do
@@ -21,7 +21,6 @@ describe "#business_time_until" do
       nine_o_clock = Time.zone.parse("2014-02-17 09:00:00")
       three_o_clock = Time.zone.parse("2014-02-17 15:00:00")
       four_o_clock = Time.zone.parse("2014-02-17 16:00:00")
-
       time = [  three_o_clock.business_time_until(four_o_clock),
                 three_o_clock.business_time_until(four_o_clock, 'GBP'),
                 three_o_clock.business_time_until(four_o_clock, 'GBPEUR'),
@@ -45,9 +44,8 @@ describe "#business_time_until" do
                 three_o_clock.business_time_until(four_o_clock, 'USDEUR'),
                 three_o_clock.business_time_until(four_o_clock, 'USD', 'EUR') ]
       time.each do |t|
-        assert_equal 0, t
+        assert_equal 0, t, t
       end
     end
-
   end
 end
