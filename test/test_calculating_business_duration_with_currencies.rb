@@ -1,19 +1,19 @@
 require File.expand_path('../helper', __FILE__)
 
 describe "calculating business duration" do
-  
+
   before do
     BusinessTime::Config.currency_holidays = {
       'USD' => ['2010-12-21', '2010-12-25', '2012-05-29']
     }
   end
-  
+
   it "properly calculate business duration" do
     monday = Date.parse("December 20, 2010")
     wednesday = Date.parse("December 22, 2010")
-    assert_equal 1, monday.business_days_until(wednesday, 'USD')
-    assert_equal 1, monday.business_days_until(wednesday, 'USDEUR')
-    assert_equal 1, monday.business_days_until(wednesday, 'USD', 'EUR')
+    assert_equal 1, monday.business_days_until(wednesday, false, 'USD')
+    assert_equal 1, monday.business_days_until(wednesday, false, 'USDEUR')
+    assert_equal 1, monday.business_days_until(wednesday, false, 'USD', 'EUR')
   end
 
   it "properly calculate business time with respect to work_hours" do

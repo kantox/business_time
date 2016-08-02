@@ -7,6 +7,24 @@ describe "calculating business duration" do
     assert_equal 2, monday.business_days_until(wednesday)
   end
 
+  it "can calculate exclusive business duration" do
+    monday = Date.parse("December 20, 2010")
+    wednesday = Date.parse("December 22, 2010")
+    assert_equal 2, monday.business_days_until(wednesday, false)
+  end
+
+  it "can calculate inclusive business duration" do
+    monday = Date.parse("December 20, 2010")
+    wednesday = Date.parse("December 22, 2010")
+    assert_equal 3, monday.business_days_until(wednesday, true)
+  end
+
+  it "can calculate inclusive business duration over weekends" do
+    sunday = Date.parse("November 15, 2015")
+    friday = Date.parse("November 20, 2015")
+    assert_equal 5, sunday.business_days_until(friday, true)
+  end
+
   it "properly calculate business time with respect to work_hours" do
     friday = Time.parse("December 24, 2010 15:00")
     monday = Time.parse("December 27, 2010 11:00")
@@ -21,8 +39,8 @@ describe "calculating business duration" do
   it "properly calculate business time with respect to work_hours with UTC time zone" do
     Time.zone = 'UTC'
 
-    monday = Time.parse("May 28 11:04:26 +0300 2012")
-    tuesday = Time.parse("May 29 17:56:45 +0300 2012")
+    monday = Time.zone.parse("May 28 11:04:26 +0300 2012")
+    tuesday = Time.zone.parse("May 29 17:56:45 +0300 2012")
     BusinessTime::Config.work_hours = {
         :mon => ["9:00", "18:00"],
         :tue => ["9:00", "18:00"],
