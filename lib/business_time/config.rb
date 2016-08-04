@@ -150,8 +150,8 @@ module BusinessTime
       end
 
       def load_currency_holidays(hash, append: false)
-        hash.inject({}) do |memo, (currency, holidays)|
-          memo.merge!(currency => load_holidays(holidays, container: config[:currency_holidays][currency] ||= Container(), append: append))
+        hash.each_with_object({}) do |(currency, holidays), memo|
+          memo[currency] = load_holidays(holidays, container: config[:currency_holidays][currency] ||= Container(), append: append)
         end
       end
 
