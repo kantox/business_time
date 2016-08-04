@@ -134,22 +134,19 @@ module BusinessTime
         end
       end
 
-      def load_holidays(holidays, container: config[:holidays], append: false, accept_parsing: false)
+      def load_holidays(holidays, container: config[:holidays], append: false)
         container.replace(DEFAULT_CONFIG[:holidays]) unless append
-        holidays.each do |holiday|
-          container.add(if Date === holiday
-            holiday
-          else
-            Date.parse(holiday).tap do |parsed|
-              ActiveSupport::Deprecation.warn("Provide holidays as `Date` objects instead of `#{holiday.class}`. I parsed that thing as #{parsed}", caller) unless accept_parsing
-            end
-          end)
-        end
+        container.merge(holidays.map do |holiday|
+          unless holiday.to_date.equal?(holiday)
+            ActiveSupport::Deprecation.warn("Provide holidays as `Date` objects instead of `#{holiday.class.name}`. I parsed that thing as #{holiday.to_date.inspect}", caller.reject { |c| c =~ /#{__FILE__}/ })
+          end
+          holiday.to_date
+        end)
       end
 
-      def load_currency_holidays(hash, append: false, accept_parsing: false)
-        hash.each do |currency, holidays|
-          load_holidays(holidays, container: config[:currency_holidays][currency] ||= Set.new, append: append, accept_parsing: true)
+      def load_currency_holidays(hash, append: false)
+        hash.inject({}) do |memo, (currency, holidays)|
+          memo.merge!(currency => load_holidays(holidays, container: config[:currency_holidays][currency] ||= Set.new, append: append))
         end
       end
 
@@ -172,8 +169,7 @@ module BusinessTime
         config_vars.each do |var|
           send("#{var}=", config[var]) if config[var] && respond_to?("#{var}=")
         end
-
-        load_holidays(config["holidays"] ||= Set.new, append: true, accept_parsing: true)
+        load_holidays(config["holidays"] ||= Set.new, append: true)
       end
 
       def with(config)

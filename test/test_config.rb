@@ -171,7 +171,7 @@ describe "config" do
   end
 
   it "supports old string format" do
-    BusinessTime::Config.load_currency_holidays({'USD' => ['2010-04-9']}, accept_parsing: true)
+    BusinessTime::Config.load_currency_holidays({'USD' => ['2010-04-9']})
     assert_equal Set.new([Date.civil(2010, 4, 9)]), BusinessTime::Config.currency_holidays['USD']
   end
 end
