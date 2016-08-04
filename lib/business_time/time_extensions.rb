@@ -11,10 +11,14 @@ module BusinessTime
       return false unless weekday?
 
       currencies = args(*currency)
-      return workday_considering_holidays?(BusinessTime::Config.holidays) if currencies.empty?
-      currencies.all? do |ccy|
-        workday_considering_holidays?(BusinessTime::Config.currency_holidays.fetch(ccy, []))
+      holidays = if currencies.empty?
+        BusinessTime::Config.holidays
+      else
+        BusinessTime::Config.currency_holidays.values_at(*currencies).inject(BusinessTime::Config.Container()) do |acum, object|
+          object ? acum.merge(object) : acum
+        end
       end
+      !holidays.include?(to_date)
     end
 
     # True if this time falls on a weekday.
@@ -183,10 +187,6 @@ module BusinessTime
 
     def during_business_hours?(*currency)
       self.workday?(*currency) && self.to_i.between?(Time.beginning_of_workday(self).to_i, Time.end_of_workday(self).to_i)
-    end
-
-    def workday_considering_holidays?(holidays)
-      !holidays.include?(to_date)
     end
   end
 end
