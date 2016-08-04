@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.description = %Q{Have you ever wanted to do things like "6.business_days.from_now" and have weekends and holidays taken into account?  Now you can.}
   s.homepage = "https://github.com/bokmann/business_time"
   s.authors = ["bokmann", 'Kantox LTD']
-  s.email = ["dbock@javaguy.org", 'aleksei.matiushkin@kantox.com']
+  s.email = ["dbock@javaguy.org", 'aleksei.matiushkin@kantox.com', 'david.lozano@kantox.com']
   s.license = "MIT"
 
   s.files = `git ls-files -z`.split("\x0").reject { |f| f.match(/(test|spec|features)\//) }
