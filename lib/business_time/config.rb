@@ -6,15 +6,20 @@ module BusinessTime
   # the beginning_of_workday, end_of_workday, and the list of holidays
   # manually, or with a yaml file and the load method.
   class Config
+
+    def self.Container(*args, &cb)
+      Set.new(*args, &cb)
+    end
+
     DEFAULT_CONFIG = {
-      holidays:              Set.new,
+      holidays:              Container(),
       currency_holidays:     {},
       beginning_of_workday:  '9:00 am',
       end_of_workday:        '5:00 pm',
       work_week:             %w(mon tue wed thu fri),
       work_hours:            {},
       work_hours_total:      {},
-      core_currencies:       Set.new,
+      core_currencies:       Container(),
       _weekdays:             nil
     }
 
@@ -146,7 +151,7 @@ module BusinessTime
 
       def load_currency_holidays(hash, append: false)
         hash.inject({}) do |memo, (currency, holidays)|
-          memo.merge!(currency => load_holidays(holidays, container: config[:currency_holidays][currency] ||= Set.new, append: append))
+          memo.merge!(currency => load_holidays(holidays, container: config[:currency_holidays][currency] ||= Container(), append: append))
         end
       end
 
@@ -169,7 +174,7 @@ module BusinessTime
         config_vars.each do |var|
           send("#{var}=", config[var]) if config[var] && respond_to?("#{var}=")
         end
-        load_holidays(config["holidays"] ||= Set.new, append: true)
+        load_holidays(config["holidays"] ||= Container(), append: true)
       end
 
       def with(config)
