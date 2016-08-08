@@ -3,9 +3,9 @@ require File.expand_path('../helper', __FILE__)
 describe "calculating business duration" do
 
   before do
-    BusinessTime::Config.currency_holidays = {
-      'USD' => ['2010-12-21', '2010-12-25', '2012-05-29']
-    }
+    BusinessTime::Config.load_currency_holidays(
+      'USD' => [Date.civil(2010, 12, 21), Date.civil(2010, 12, 25), Date.civil(2012, 05, 29)]
+    )
   end
 
   it "properly calculate business duration" do
@@ -30,17 +30,16 @@ describe "calculating business duration" do
   end
 
   it "properly calculate business time with respect to work_hours with UTC time zone" do
-    Time.zone = 'UTC'
-
-    monday = Time.parse("May 28 11:04:26 +0300 2012")
-    tuesday = Time.parse("May 29 17:56:45 +0300 2012")
-    BusinessTime::Config.work_hours = {
-        :mon => ["9:00", "18:00"],
-        :tue => ["9:00", "18:00"],
-        :wed => ["9:00", "18:00"]
-    }
-    assert_equal 32400.0, monday.business_time_until(tuesday, 'USD')
-    Time.zone = nil
+    Time.use_zone('UTC') do
+      monday = Time.zone.parse("May 28 11:04:26 +0300 2012")
+      tuesday = Time.zone.parse("May 29 17:56:45 +0300 2012")
+      BusinessTime::Config.work_hours = {
+          :mon => ["9:00", "18:00"],
+          :tue => ["9:00", "18:00"],
+          :wed => ["9:00", "18:00"]
+      }
+      assert_equal 32400.0, monday.business_time_until(tuesday, 'USD')
+    end
   end
-
 end
+

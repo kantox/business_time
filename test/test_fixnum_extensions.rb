@@ -2,13 +2,13 @@ require File.expand_path('../helper', __FILE__)
 
 describe "fixnum extensions" do
   before do
-    BusinessTime::Config.currency_holidays = {
-      'EUR' => ['2015-01-12', '2015-05-01'],
-      'USD' => ['2015-05-04'],
-      'GBP' => ['2015-05-05']
-    }
+    BusinessTime::Config.load_currency_holidays(
+      'EUR' => [Date.civil(2015, 01, 12), Date.civil(2015, 05, 01)],
+      'USD' => [Date.civil(2015, 05, 04)],
+      'GBP' => [Date.civil(2015, 05, 05)]
+    )
   end
-  
+
   it "respond to business_hours by returning an instance of BusinessHours" do
     assert(1.respond_to?(:business_hour))
     assert(1.respond_to?(:business_hours))

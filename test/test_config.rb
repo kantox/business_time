@@ -77,7 +77,7 @@ describe "config" do
     assert_equal "11:00 am", BusinessTime::Config.beginning_of_workday
     assert_equal "2:00 pm", BusinessTime::Config.end_of_workday
     assert_equal ['mon'], BusinessTime::Config.work_week
-    assert_equal [Date.parse('2012-12-25')], BusinessTime::Config.holidays
+    assert_equal Set.new([Date.parse('2012-12-25')]), BusinessTime::Config.holidays
   end
 
   it "include holidays read from YAML config files" do
@@ -102,7 +102,7 @@ describe "config" do
     assert_equal "9:00 am", BusinessTime::Config.beginning_of_workday
     assert_equal "5:00 pm", BusinessTime::Config.end_of_workday
     assert_equal %w[mon tue wed thu fri], BusinessTime::Config.work_week
-    assert_equal [], BusinessTime::Config.holidays
+    assert_empty BusinessTime::Config.holidays
   end
 
   it "is threadsafe" do
@@ -168,5 +168,10 @@ describe "config" do
         end
       end.join
     end
+  end
+
+  it "supports old string format" do
+    BusinessTime::Config.load_currency_holidays({'USD' => ['2010-04-9']})
+    assert_equal Set.new([Date.civil(2010, 4, 9)]), BusinessTime::Config.currency_holidays['USD']
   end
 end

@@ -2,7 +2,7 @@ require File.expand_path('../helper', __FILE__)
 
 describe "currency" do
   include BusinessTime::Currency
-  
+
   let(:valid) {
     {
       'EUR' => ['EUR'],
@@ -10,7 +10,7 @@ describe "currency" do
       'USDEUR' => ['EUR', 'USD'],
       'EUR|USD' => ['EUR', 'USD'],
       'USD|EUR' => ['EUR', 'USD'],
-      
+
       ['EUR'] => ['EUR'],
       ['EURUSD'] => ['EUR', 'USD'],
       ['USDEUR'] => ['EUR', 'USD'],
@@ -22,7 +22,7 @@ describe "currency" do
       ['PLN', 'EUR', 'USD'] => ['EUR', 'USD', 'PLN'],
     }
   }
-  
+
   let(:invalid) {
     [
       'EU', 'EURUS', ['US'],
@@ -32,15 +32,15 @@ describe "currency" do
       [nil, 'EUR'],
     ]
   }
-  
+
   describe 'args' do
     it "correctly processes arguments" do
       valid.each do |k,v|
         assert_equal args(*k).sort, v.sort
       end
-      assert_equal args(), []
+      assert_empty args()
     end
-    
+
     it "Raises argument error" do
       invalid.each do |i|
         assert_raises ArgumentError do
@@ -48,6 +48,6 @@ describe "currency" do
         end
       end
     end
-    
+
   end
 end
