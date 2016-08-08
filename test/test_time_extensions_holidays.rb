@@ -10,10 +10,6 @@ describe "holidays" do
     BusinessTime::Config.core_currencies = ["KX™", "LP™"]
   end
 
-  after do |example|
-    BusinessTime::Config.default_config
-  end
-
   let(:params) {
     [['USD'], ['USD|EUR'], ['USDEUR'], ['USD', 'EUR'], ['USD', 'GBP', 'EUR']]
   }
