@@ -90,6 +90,14 @@ describe "business days" do
       assert_equal expected, later
     end
 
+    it "should ignore business hour when adding one business day from after business hours" do
+      BusinessTime::Config.consider_business_hours_for_rolls = false
+      wednesday = Time.parse("Wednesday October 14th, 2015, 21:54 pm")
+      later = 1.business_days.after(wednesday)
+      expected = Time.parse("Friday October 15th, 2015, 21:54 pm")
+      assert_equal expected, later
+    end
+
     it "should return a business hour when subtracting one business day from before business hours" do
       wednesday = Time.parse("Wednesday October 14th, 2015, 01:54 am")
       before = 1.business_days.before(wednesday)

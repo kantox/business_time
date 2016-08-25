@@ -20,6 +20,7 @@ module BusinessTime
       work_hours:            {},
       work_hours_total:      {},
       core_currencies:       Container(),
+      consider_business_hours_for_rolls: true,
       _weekdays:             nil
     }
 
@@ -101,6 +102,8 @@ module BusinessTime
 
     # total work hours for a day. Never set, always calculated.
     threadsafe_cattr_accessor :work_hours_total
+
+    threadsafe_cattr_accessor :consider_business_hours_for_rolls
 
     threadsafe_cattr_accessor :_weekdays # internal
 
