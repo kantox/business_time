@@ -94,7 +94,7 @@ describe "business days" do
       BusinessTime::Config.consider_business_hours_for_rolls = false
       wednesday = Time.parse("Wednesday October 14th, 2015, 21:54 pm")
       later = 1.business_days.after(wednesday)
-      expected = Time.parse("Friday October 15th, 2015, 21:54 pm")
+      expected = Time.parse("Thursday October 15th, 2015, 21:54 pm")
       assert_equal expected, later
     end
 
