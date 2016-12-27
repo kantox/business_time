@@ -28,7 +28,7 @@ module BusinessTime
 
       # If we have a Time or DateTime object, we can roll_forward to the
       #   beginning of the next business day
-      if time.is_a?(Time) || time.is_a?(DateTime)
+      if BusinessTime::Config.consider_business_hours_for_rolls && (time.is_a?(Time) || time.is_a?(DateTime))
         time = Time.roll_forward(time) unless time.during_business_hours?
       end
       time
@@ -46,7 +46,7 @@ module BusinessTime
 
       # If we have a Time or DateTime object, we can roll_backward to the
       #   beginning of the previous business day
-      if time.is_a?(Time) || time.is_a?(DateTime)
+      if BusinessTime::Config.consider_business_hours_for_rolls && (time.is_a?(Time) || time.is_a?(DateTime))
         unless time.during_business_hours?
           time = Time.beginning_of_workday(Time.roll_backward(time))
         end
