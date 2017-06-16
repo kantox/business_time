@@ -1,12 +1,17 @@
 language: ruby
 sudo: false
 rvm:
-  - 1.9.3
-#  - 2.0.0 seems to have a thread safety issues with test_config#114
-  - 2.1.0
-  - 2.1.5
-  - 2.2.0
+  - 2.2.2
   - 2.3.0
-  - jruby
+  - 2.4.0
+  #- jruby
 before_install:
  - gem update bundler
+gemfile:
+  - gemfiles/active_support_3.gemfile
+  - gemfiles/active_support_4.gemfile
+  - gemfiles/active_support_5.gemfile
+matrix:
+  exclude:
+    - rvm: 2.4.0
+      gemfile: gemfiles/active_support_3.gemfile

@@ -17,8 +17,8 @@ Gem::Specification.new do |s|
   s.files = `git ls-files -z`.split("\x0").reject { |f| f.match(/(test|spec|features)\//) }
   s.require_paths = %w(lib)
 
-  s.add_dependency 'activesupport', '>= 3.1.0', '< 5'
-  s.add_dependency 'tzinfo'
+  s.add_dependency('activesupport','>= 3.2.0')
+  s.add_dependency("tzinfo")
 
   s.add_development_dependency "rake", '~> 10'
   s.add_development_dependency "rdoc", '~> 4'

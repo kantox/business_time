@@ -42,7 +42,7 @@ I needed this, but taking into account business hours/days and holidays.
     1.business_day.ago
     4.business_days.ago
     8.business_days.ago
-    
+
     Date.today.workday?
     Date.parse("2015-12-09").workday?
     Date.parse("2015-12-12").workday?
@@ -179,12 +179,11 @@ and some complexities (bugs?) in the timeWithZone class, this was harder than ex
   preserved and the beginning and end of times for the business day are
   referenced in that time zone.
 
-This can lead to some wierd looking effects if, say, you are in the Eastern time zone but doing everything in UTC times...
+This can lead to some weird looking effects if, say, you are in the Eastern time zone but doing everything in UTC times...
 Your business day will appear to start and end at 9:00 and 5:00 UTC.
 If this seems perplexing to you, I can almost guarantee you are in over your head with timezones in other ways too,
 this is just the first place you encountered it.
 Timezone relative date handling gets more and more complicated every time you look at it and takes a long time before it starts to seem simple again.
-I'm hoping Arild and I write some good blog entries on the subject at http://blog.codesherpas.com.
 
 == Integration with the Holidays gem
 
@@ -197,22 +196,6 @@ I'm hoping Arild and I write some good blog entries on the subject at http://blo
     # BusinessTime::Config.holidays << holiday[:date].next_week if !holiday[:date].weekday?
   end
 
-== Releases
-
-0.7.6 - Fixed a defect where timezone was not preserved when dealing with beginning_or_workday and end_of_workday.
-        Thanks bazzargh.
-        
-0.7.2 - 0.7.5 - many pull requests from contributors, and a changelog was not adequately kept.  I regret that.
-                git blame is your friend for diagnosing these dark days.
-                
-0.7.1 - fixing a multithreaded issue, upgrading some dependencies, loosening the dependency on TZInfo
-
-0.7.0 - major maintenance upgrade on the process of constructing the gem, testing the gem, and updating dependencies.
-        the api has not changed.
-
-
-0.6.2 - rchady pointed out that issue #14 didn't appear to be released.  This fixes that, as well as confirms that all tests run as expected on Ruby 2.0.0p195
-
 == Contributors
  * David Bock  http://github.com/bokmann
  * Enrico Bianco  http://github.com/enricob
@@ -221,6 +204,7 @@ I'm hoping Arild and I write some good blog entries on the subject at http://blo
  * Glenn Vanderburg http://github.com/glv
  * Michael Grosser http://github.com/grosser
  * Michael Curtis http://github.com/mcurtis
+ * Brian Ewins http://github.com/bazzargh
 
  (Special thanks for Arild on the complexities of dealing with TimeWithZone)
 
@@ -252,6 +236,20 @@ I'm hoping Arild and I write some good blog entries on the subject at http://blo
   need the baggage.
 
 
+== A note on stability and change
+
+Sometimes people ask me why this gem doesn't release more often.  My opinions on that are best discussed in person in a friendly discussion, but I'll attempt some of that here.
+
+First, a big part of the reason is that the projects I do use this gem on are happy with it's current functionality.  It is 'suitable for the purpose' for which I released it, and as such, maintenance I do on this gem is a gift to the community.
+
+Second, out of the ~1.3 million downloads (according to rubygems.org), the number of real 'issues' with this gem have been minimal.  Most of the issues that are opened are really people with slightly different requirements than I have regarding whether 'off hours' work counts as the previous or the next business day, a disagreement on the semantics of days vs. hours, etc.  I take care to try to explain these choices in the open issues, but to my mind, they aren't true issues if it's just a difference of opinion.  Even so, I'll gladly accept pull requests that resolve this difference of opinion as a configuration option... just don't expect me to do your job for you.  I've already given you 90% of what you need.
+
+Third, a business time gem is, well, relevant to businesses.  Many businesses don't move quickly.  My government clients move even more slowly.  Stability is favored in these environments.
+
+Fourth, new features can wait.  To the person that adds them they can be mission critical, but with modern packaging processes, they can use their version without waiting for their changes to be included in the upstream version.  Their changes don't break your code.
+
+I'm proud of the work in this gem; the stability is a big part of that.  This gem has lived longer than many others that have attempted to do the same thing.  I expect it to be here chugging away when Ruby has become the next COBOL.
+
 == Copyright
 
-Copyright (c) 2010-2016 bokmann. See LICENSE for details.
+Copyright (c) 2010-2017 bokmann. See LICENSE for details.
