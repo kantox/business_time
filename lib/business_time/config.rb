@@ -1,4 +1,5 @@
 require 'active_support/core_ext'
+require_relative 'parsed_time'
 
 module BusinessTime
 
@@ -13,12 +14,14 @@ module BusinessTime
 
     DEFAULT_CONFIG = {
       holidays:              SortedSet.new,
-      beginning_of_workday:  ParsedTime.parse('9:00 am'),
-      end_of_workday:        ParsedTime.parse('5:00 pm'),
+      currency_holidays:     {},
+      beginning_of_workday:  BusinessTime::ParsedTime.parse('9:00 am'),
+      end_of_workday:        BusinessTime::ParsedTime.parse('5:00 pm'),
       work_week:             %w(mon tue wed thu fri),
       work_hours:            {},
       work_hours_total:      {},
       _weekdays:             nil,
+      core_currencies:       SortedSet.new,
       fiscal_month_offset:   10,
     }
 
@@ -77,11 +80,7 @@ module BusinessTime
       def threadsafe_cattr_setter(name)
         define_singleton_method "#{name}=" do |value|
           config[name] = value
-        end if writer
-      end
-
-      def threadsafe_cattr_reader(name)
-        threadsafe_cattr_accessor(name, writer: false)
+        end
       end
     end
 
