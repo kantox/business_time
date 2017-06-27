@@ -7,19 +7,13 @@ module BusinessTime
       return Set.new if currency.empty?
 
       curr = if currency.length == 1 # string
-                Set.new(if currency.first.length.remainder(3).zero? # 'EURUSD'
-                  currency.first.scan /.{3}/
-                elsif currency.first.length == 7           # 'EUR|USD'
-                  currency.first.split '|'
-                else
-                  [''] # will raise an error below, DRY
-                end)
+               Set.new(currency.first.scan(/\w{,3}/).reject(&:empty?))
              else
                currency.to_set
              end
 
       raise ArgumentError.new("Wrong currency argument [#{currency}]") \
-        unless curr.all? { |it| String === it && it.length == 3 }
+        unless !curr.empty? && curr.all? { |it| String === it && it.length == 3 }
 
       curr.merge(BusinessTime::Config.core_currencies)
     end
